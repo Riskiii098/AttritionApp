@@ -32,12 +32,17 @@ Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilit
 
 ```text
 AttritionProject/
+├── .github/
+│   └── workflows/
+│       └── huggingface-sync.yml # Otomasi Deployment CI/CD ke Hugging Face
 ├── app/
 │   ├── app.py              # Main Flask application dan registrasi REST endpoints
-│   └── model_loader.py     # Loader otomatis dengan joblib dan track training via MLflow
+│   ├── model_loader.py     # Loader otomatis dengan joblib dan track training via MLflow
+│   └── utils.py            # Helper scripts untuk fungsionalitas pendukung Flask
 ├── data/
 │   └── employee_data_final.csv  # Dataset mentah 
 ├── model/                  # Cache penyimpanan parameter dan arsitektur mesin `.pkl` via Joblib
+├── mlflow.db               # Database SQLite lokal untuk tracking history MLflow
 ├── mlruns/                 # Direktori internal log Tracking model oleh MLflow (otomatis terbuat)
 ├── frontend/
 │   ├── static/

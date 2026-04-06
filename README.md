@@ -78,7 +78,7 @@ AttritionProject/
    ```
 
 5. **Akses ke Aplikasi:** 
-   Buka aplikasi peramban (browser) anda, lalu meluncur ke `http://127.0.0.1:5000/` untuk Flask. Bila ingin mengecek logging model, akses `http://127.0.0.1:5001/` untuk MLflow.
+   Buka aplikasi peramban (browser) anda, lalu meluncur ke `http://127.0.0.1:7860/` untuk Flask. Bila ingin mengecek logging model, akses `http://127.0.0.1:5001/` untuk MLflow.
 
 ---
 
@@ -92,10 +92,10 @@ Pastikan aplikasi **Docker Desktop** atau *daemon* Docker Anda sudah aktif (*Run
    ```
 2. **Buka Jalur Eksekusi Container di Background:**
    ```bash
-   docker run -d -p 5000:5000 --name running-attrition attrition-app
+   docker run -d -p 7860:7860 --name running-attrition attrition-app
    ```
 3. **Mulai Pengujian Simulasi Web:** 
-   Sekarang Anda bisa mengakses `http://localhost:5000/` secara virtual, terisolasi penuh dari operating system Windows/Mac Anda!
+   Sekarang Anda bisa mengakses `http://localhost:7860/` secara virtual, terisolasi penuh dari operating system Windows/Mac Anda!
 
 ---
 > *Dikembangkan khusus untuk kebutuhan analitik Employee Attrition modern.*

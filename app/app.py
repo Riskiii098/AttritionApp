@@ -1,7 +1,11 @@
 import os
+import sys
 import traceback
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
+
+# Menambahkan path absolut agar gunicorn selalu menemukan model_loader tanpa Error ModuleNotFound
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import fungsi prediksi yang telah berevolusi memberikan return Tuple
 from model_loader import predict, predict_from_dict

@@ -5,17 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Attrition Prediction</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif;}
-        .hero { 
-            padding: 100px 20px; 
-            background: linear-gradient(135deg, #0d6efd, #0dcaf0); 
-            color: white; 
-            border-radius: 20px; 
-            margin-top: 30px;
-        }
-        .navbar-brand { font-weight: 700; letter-spacing: 1px; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -35,14 +25,16 @@
     </nav>
 
     <div class="container mt-2">
-        <div class="hero text-center shadow-lg border-0">
-            <h1 class="display-4 fw-bolder">Intelijen Retensi Karyawan</h1>
-            <p class="lead mt-3 fw-normal" style="max-width: 700px; margin: 0 auto;">Pemanfaatan kecerdasan buatan (Machine Learning) untuk mendeteksi dini probabilitas mundurnya (attrition) karyawan dari perusahaan.</p>
-            <div class="mt-5">
-                <a href="/dashboard" class="btn btn-light btn-lg me-3 shadow text-primary fw-bold px-4 rounded-pill">Lihat Dashboard</a>
-                <a href="/predict" class="btn btn-outline-light btn-lg shadow px-4 rounded-pill">Mulai Analisis</a>
+        <div class="hero text-center text-white">
+            <h1 class="display-4">Intelijen Retensi Karyawan</h1>
+            <p class="lead mt-3" style="max-width: 700px; margin: 0 auto; opacity: 0.9;">Pemanfaatan kecerdasan buatan untuk mendeteksi dini probabilitas mundurnya (attrition) karyawan kunci dari perusahaan Anda.</p>
+            <div class="mt-5 d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/dashboard" class="btn btn-custom-light btn-lg fw-bold px-4 rounded-pill">Lihat Dashboard</a>
+                <a href="/predict" class="btn btn-custom-outline btn-lg px-4 rounded-pill">Mulai Analisis</a>
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

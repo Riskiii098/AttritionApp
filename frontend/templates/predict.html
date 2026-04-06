@@ -5,18 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predict - AttritionApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .card { border-radius: 16px; border: none; }
-        .result-box {
-            display: none; 
-            border-radius: 12px; 
-            padding: 20px; 
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -35,32 +24,32 @@
         </div>
     </nav>
 
-    <div class="container mt-5 mb-5">
+    <div class="container mt-5 mb-5 py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card shadow p-5 bg-white">
-                    <h2 class="mb-2 text-center text-primary fw-bolder">Kalkulator Attrition Spesifik</h2>
-                    <p class="text-center text-secondary mb-4">Menganalisis probabilitas *resign* menggunakan 8 Parameter Paling Berpengaruh Utama berdasar bobot Model Random Forest. (Parameter lain secara otomatis ditimpa profil rata-rata/median perusahaan).</p>
+                <div class="premium-card p-4 p-md-5">
+                    <h2 class="mb-3 text-center fw-bolder" style="color: #203a43;">Kalkulator Attrition Spesifik</h2>
+                    <p class="text-center text-muted mb-5" style="font-size: 1.05rem;">Menganalisis probabilitas <i>resign</i> karyawan menggunakan 8 Parameter Utama berdasar bobot Model Random Forest.</p>
                     
                     <form id="predictForm">
-                        <div class="row g-3">
+                        <div class="row g-4">
                             <!-- Kolom Primer Kinerja & Gaji -->
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Gaji Bulanan (Monthly Income / USD)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Gaji Bulanan (USD)</label>
                                 <input type="number" class="form-control" name="MonthlyIncome" id="inputSalary" value="4500" min="500" max="100000" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Usia Karyawan (Age)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Usia Karyawan (Tahun)</label>
                                 <input type="number" class="form-control" name="Age" id="inputAge" value="30" min="18" max="70" required>
                             </div>
                             
                             <!-- Kolom Relasi Lokasi & Lembur -->
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Jarak Domisili ke Kantor (Km)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Jarak Domisili ke Kantor (Km)</label>
                                 <input type="number" class="form-control" name="DistanceFromHome" id="inputDistance" value="10" min="1" max="200" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Intensitas Lembur (OverTime)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Intensitas Lembur</label>
                                 <select class="form-select" name="OverTime" id="inputOverTime">
                                     <option value="No">Tidak Lembur (No)</option>
                                     <option value="Yes">Sering Lembur (Yes)</option>
@@ -68,21 +57,21 @@
                             </div>
 
                             <!-- Karir Profesional Karyawan -->
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Total Pengalaman Kerja (Tahun Karir)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Total Pengalaman Kerja (Tahun)</label>
                                 <input type="number" class="form-control" name="TotalWorkingYears" id="inputTotalYears" value="8" min="0" max="50" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Lama Bekerja di Perusahaan Saat Ini</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Lama Bekerja di Perusahaan Saat Ini</label>
                                 <input type="number" class="form-control" name="YearsAtCompany" id="inputYearsCompany" value="5" min="0" max="50" required>
                             </div>
                             
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Jumlah Perusahaan Sebelumnya</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Jumlah Perusahaan Sebelumnya</label>
                                 <input type="number" class="form-control" name="NumCompaniesWorked" id="inputNumCompanies" value="2" min="0" max="25" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Kepuasan Pekerjaan Internal (1-4)</label>
+                            <div class="col-md-6">
+                                <label class="form-label">Kepuasan Kerja Internal (1-4)</label>
                                 <select class="form-select" name="JobSatisfaction" id="inputJobSatisf">
                                     <option value="1">1 - Sangat Rendah</option>
                                     <option value="2">2 - Netral</option>
@@ -92,15 +81,15 @@
                             </div>
                         </div>
                         
-                        <div class="d-grid mt-4">
-                            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg shadow-sm fw-bold rounded-pill">
+                        <div class="d-grid mt-5">
+                            <button type="submit" id="submitBtn" class="btn text-white fw-bold rounded-pill shadow-sm">
                                 Identifikasi Kemungkinan Resign
                             </button>
                         </div>
                     </form>
 
                     <!-- Area Response Hasil -->
-                    <div id="resultBox" class="result-box mt-5 shadow-sm">
+                    <div id="resultBox" class="result-box mt-5 shadow-sm text-white">
                         <span id="resultText"></span>
                     </div>
 
@@ -109,6 +98,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

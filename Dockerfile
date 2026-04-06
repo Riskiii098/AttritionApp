@@ -18,9 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Menyalin seluruh file dan direktori project saat ini ke dalam folder /app container
 COPY . .
 
-# Buka akses port 5000 sesuai konfigurasi default Flask
-EXPOSE 5000
+# Buka akses port 7860 sesuai konfigurasi default Hugging Face Spaces
+EXPOSE 7860
 
 # Command spesifik untuk mengeksekusi web server level production
 # Menggunakan Gunicorn karena image berbasis Linux Debian
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "app.app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--workers", "2", "app.app:app"]

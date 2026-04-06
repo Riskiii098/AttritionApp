@@ -7,12 +7,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        .iframe-container {
+        .iframe-wrapper {
+            position: relative;
             width: 100%;
             height: 82vh;
-            border: none;
+            min-height: 600px;
+            overflow: hidden;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            background: #fff;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Ekstra penyesuaian untuk layar Handphone */
+        @media (max-width: 768px) {
+            .iframe-wrapper {
+                height: 100vh; /* Memperlebar vertikal di HP agar konten report Looker tidak terpotong */
+                min-height: 800px;
+                border-radius: 12px;
+            }
         }
         .header-card {
             border-radius: 16px;
@@ -48,7 +65,9 @@
         </div>
         
         <!-- Replace src parameter below with your real Google Looker Studio Embed Link -->
-        <iframe class="iframe-container bg-white" src="https://lookerstudio.google.com/embed/reporting/2a469da0-819d-4f6f-bab2-9b1f6c734619/page/6T3qF" allowfullscreen></iframe>
+        <div class="iframe-wrapper">
+            <iframe class="iframe-container" src="https://lookerstudio.google.com/embed/reporting/2a469da0-819d-4f6f-bab2-9b1f6c734619/page/6T3qF" allowfullscreen></iframe>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

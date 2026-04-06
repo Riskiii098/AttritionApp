@@ -1,3 +1,12 @@
+---
+title: AttritionApp
+emoji: 📈
+colorFrom: blue
+colorTo: turquoise
+sdk: docker
+pinned: false
+---
+
 # Employee Attrition Intelligence System
 
 Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilitas keluarnya karyawan (resign/attrition) secara dini dan proaktif. Proyek ini memadukan kemampuan analitik dari Scikit-Learn dengan antarmuka web modern Bootstrap 5, ditenagai oleh *backend* Python Flask yang cepat, dan siap menyajikan repot *Business Intelligence* melalui Google Looker Studio.

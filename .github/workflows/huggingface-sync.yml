@@ -1,0 +1,24 @@
+name: Sync to Hugging Face Hub
+
+on:
+  push:
+    branches: [main] # Akan terpicu jika ada push ke branch main
+
+  # Memungkinkan workflow ini dijalankan secara manual dari tab Actions di Github
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to Hugging Face Hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        # Ganti USERNAME dengan username Hugging Face-mu
+        # Ganti NAMA_SPACE dengan nama Space-mu di Hugging Face
+        run: git push https://USERNAME:$HF_TOKEN@huggingface.co/spaces/USERNAME/NAMA_SPACE main -f

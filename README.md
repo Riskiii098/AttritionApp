@@ -2,7 +2,7 @@
 title: AttritionApp
 emoji: 📈
 colorFrom: blue
-colorTo: turquoise
+colorTo: green
 sdk: docker
 pinned: false
 ---

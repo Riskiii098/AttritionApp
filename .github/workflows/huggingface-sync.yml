@@ -21,4 +21,4 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         # Ganti USERNAME dengan username Hugging Face-mu
         # Ganti NAMA_SPACE dengan nama Space-mu di Hugging Face
-        run: git push https://Riskiii098:$HF_TOKEN@huggingface.co/spaces/Riskiii098/Attrition-App main -f
+        run: git push https://Riskiii:$HF_TOKEN@huggingface.co/spaces/Riskiii/AttritionApp main -f

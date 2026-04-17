@@ -6,3 +6,4 @@ joblib
 mlflow
 gunicorn
 flask-cors
+dagshub

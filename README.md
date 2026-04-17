@@ -13,17 +13,17 @@ Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilit
 
 ## 🌟 Fitur Utama
 
-- **Predictive ML Endpoint:** REST API *real-time* yang menerima data vektor *array* (JSON) dan melakukan skoring/prediksi menggunakan algoritma *Random Forest*.
-- **Model Tracking & Persistence:** Menggunakan **MLflow** untuk pencatatan/logging performa (akurasi & parameter), dan **Joblib** untuk penyimpanan performa model sebagai `file.pkl` secara terstruktur demi memori yang efisien.
+- **Adaptive Risk Thresholding:** Mengimplementasikan ambang batas (threshold) **0.40** untuk meningkatkan sensitivitas deteksi dini (*High Recall*), memastikan resiko sekecil apapun teridentifikasi sebelum terlambat.
+- **Enterprise Experiment Tracking:** Menggunakan **DagsHub** yang terintegrasi dengan **MLflow** untuk pencatatan performa model secara terpusat (Cloud), memungkinkan kolaborasi tim data yang lebih profesional.
+- **Model Persistence:** Memanfaatkan **Joblib** untuk penyimpanan model `.pkl` dan pemuatan fitur secara instan demi efisiensi memori.
 - **Executive BI Dashboard:** Halaman *dashboard layout* penuh (*full-width*) yang disiapkan untuk penanaman (*embed*) laporan analitis HR secara langsung dari Google Looker Studio.
-- **Interactive UI/UX:** Antarmuka web yang bersih (*clean*), responsif, dan elegan menggunakan Bootstrap 5 bersama Javascript *Fetch API async* untuk memberikan pengalaman pengguna tanpa *loading page* yang patah-patah.
-- **Containerized & Siap Produksi:** Dilengkapi dengan *Dockerfile* yang sangat ringan (*python slim image*) memastikan aplikasi *Machine Learning* berjalan persis sama di environment manapun.
+- **Containerized & Mobile Ready:** Antarmuka Bootstrap 5 yang responsif dan dukungan *Dockerfile* (Python slim image) untuk deployment yang konsisten di platform cloud seperti Hugging Face Spaces.
 
 ## 🛠️ Stack & Tools
 
 - **Backend Framework:** Python Flask 3.x
 - **Machine Learning Core:** Scikit-Learn, Pandas, NumPy
-- **MLOps Toolkit:** MLflow, Joblib
+- **MLOps & Tracking:** DagsHub, MLflow, Joblib
 - **Frontend Presentation:** HTML5, Modern Javascript (Fetch API), Bootstrap 5.3
 - **Data Visualization:** Google Looker Studio Embeds (`<iframe>` integrasi)
 - **Deployment & Scaling:** Docker
@@ -36,9 +36,9 @@ AttritionProject/
 │   └── workflows/
 │       └── huggingface-sync.yml # Otomasi Deployment CI/CD ke Hugging Face
 ├── app/
-│   ├── app.py              # Main Flask application dan registrasi REST endpoints
-│   ├── model_loader.py     # Loader otomatis dengan joblib dan track training via MLflow
-│   └── utils.py            # Helper scripts untuk fungsionalitas pendukung Flask
+│   ├── app.py              # Main Flask application & Business Logic (Threshold 0.40)
+│   ├── model_loader.py     # DagsHub & MLflow integration with automatic training logic
+│   └── utils.py            # Placeholder untuk fungsionalitas pendukung di masa depan
 ├── data/
 │   └── employee_data_final.csv  # Dataset mentah 
 ├── model/                  # Cache penyimpanan parameter dan arsitektur mesin `.pkl` via Joblib
@@ -77,13 +77,14 @@ AttritionProject/
    ```
    *(Catatan: Model Machine Learning akan otomatis dilatih (on-the-fly) pertama kali lalu log model masuk ke MLflow dan diekspor oleh joblib, tidak perlu step training manual).*
 
-4. **Akses Dashboard MLflow (Opsional):**
+4. **Akses Dashboard Tracking (DagsHub/MLflow):**
+   Aplikasi secara otomatis mencatat setiap eksperimen ke repository DagsHub. Anda bisa memantau kurva akurasi dan parameter model melalui UI DagsHub atau menjalankan secara lokal:
    ```bash
    mlflow ui -p 5001
    ```
 
 5. **Akses ke Aplikasi:** 
-   Buka aplikasi peramban (browser) anda, lalu meluncur ke `http://127.0.0.1:7860/` untuk Flask. Bila ingin mengecek logging model, akses `http://127.0.0.1:5001/` untuk MLflow.
+   Buka peramban anda ke `http://127.0.0.1:7860/`. Aplikasi akan menampilkan prediksi berbasis threshold risiko yang telah dioptimasi.
 
 ---
 

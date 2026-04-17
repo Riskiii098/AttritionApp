@@ -53,14 +53,17 @@ def api_predict():
         else:
             raise ValueError("Key 'features' harus format array [1, 2...] atau JSON Keys {'Age': 35}!")
         
-        # Mengembalikan threshold kepada natural decision boundary (50%)
-        # Agar prediksi bertindak lebih stabil sebagaimana perilaku riil Random Forest Scikit-Learn.
-        is_attrition = 1 if prob_attrition >= 0.50 else 0
+        # Logika Bisnis Akhir: Threshold 0.40 (40% Probabilitas sudah dianggap berisiko)
+        # Sesuai dengan standar deteksi dini untuk mitigasi HR.
+        is_attrition = 1 if prob_attrition >= 0.40 else 0
         
         # Ubah probabilitas decimal 0.0-1.0 menjadi nilai Persen XX.XX%
         prob_percentage = round(prob_attrition * 100, 2)
 
-        human_readable_status = "Attrition (Sangat Berisiko Resign)" if is_attrition == 1 else "No Attrition (Diprediksi Bertahan)"
+        if is_attrition == 1:
+            human_readable_status = "High Risk (Perlu Perhatian Khusus)"
+        else:
+            human_readable_status = "Safe / Low Risk (Diprediksi Bertahan)"
 
         return jsonify({
             'status': 'success',

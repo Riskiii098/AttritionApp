@@ -3,7 +3,11 @@ import numpy as np
 import pandas as pd
 import joblib
 import mlflow
+import dagshub
+from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV_PATH = os.path.join(BASE_DIR, 'data', 'employee_data_final.csv')
@@ -43,15 +47,43 @@ def load_or_train_model():
             
             _features = X_encoded.columns.tolist()
             
+            # Bagi data: 80% untuk latihan, 20% untuk ujian
+            X_train, X_test, y_train, y_test = train_test_split(X_encoded, y_encoded, test_size=0.2, random_state=42)
+            
+            print("Initiating DagsHub integration and tracking with MLflow...")
+            dagshub.init(repo_owner='Riskiii098', repo_name='AttritionApp', mlflow=True)
             mlflow.set_experiment("Attrition_Prediction")
-            with mlflow.start_run():
-                _model = RandomForestClassifier(n_estimators=100, random_state=42)
-                _model.fit(X_encoded, y_encoded)
+            
+            # Membuat nama run otomatis dengan timestamp
+            run_name = f"RandomForest_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            
+            with mlflow.start_run(run_name=run_name):
+                # Menambahkan class_weight='balanced' agar model lebih sensitif terhadap karyawan yang resign
+                _model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=42)
+                _model.fit(X_train, y_train)
                 
-                accuracy = _model.score(X_encoded, y_encoded)
+                # Uji pada data yang BELUM pernah dilihat (X_test)
+                # Menggunakan Threshold 0.40 untuk deteksi Risiko (Logika Bisnis yang Benar)
+                probs = _model.predict_proba(X_test)[:, 1]
+                predictions = (probs >= 0.40).astype(int)
                 
+                # Hitung Metrik Lengkap pada Threshold 0.40
+                acc = accuracy_score(y_test, predictions)
+                prec = precision_score(y_test, predictions)
+                rec = recall_score(y_test, predictions)
+                f1 = f1_score(y_test, predictions)
+                
+                print(f"Final Model Trained! (Threshold: 0.40)")
+                print(f"Metrics -> Accuracy: {acc:.4f}, Precision: {prec:.4f}, Recall: {rec:.4f}, F1-Score: {f1:.4f}")
+                
+                # Log ke MLflow
                 mlflow.log_param("n_estimators", 100)
-                mlflow.log_metric("accuracy", accuracy)
+                mlflow.log_param("threshold", 0.40)
+                mlflow.log_metric("accuracy", acc)
+                mlflow.log_metric("precision", prec)
+                mlflow.log_metric("recall", rec)
+                mlflow.log_metric("f1_score", f1)
+                
                 mlflow.sklearn.log_model(_model, "model")
             
             os.makedirs(MODEL_DIR, exist_ok=True)

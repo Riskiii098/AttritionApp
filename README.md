@@ -15,6 +15,7 @@ Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilit
 
 - **Adaptive Risk Thresholding:** Mengimplementasikan ambang batas (threshold) **0.40** untuk meningkatkan sensitivitas deteksi dini (*High Recall*), memastikan resiko sekecil apapun teridentifikasi sebelum terlambat.
 - **Enterprise Experiment Tracking:** Menggunakan **DagsHub** yang terintegrasi dengan **MLflow** untuk pencatatan performa model secara terpusat (Cloud), memungkinkan kolaborasi tim data yang lebih profesional.
+- **Automated Model Hub Deployment:** Secara otomatis mengunggah salinan fisik model `.pkl` ke **Hugging Face Model Hub** setelah pelatihan, memudahkan distribusi dan versi model.
 - **Model Persistence:** Memanfaatkan **Joblib** untuk penyimpanan model `.pkl` dan pemuatan fitur secara instan demi efisiensi memori.
 - **Executive BI Dashboard:** Halaman *dashboard layout* penuh (*full-width*) yang disiapkan untuk penanaman (*embed*) laporan analitis HR secara langsung dari Google Looker Studio.
 - **Containerized & Mobile Ready:** Antarmuka Bootstrap 5 yang responsif dan dukungan *Dockerfile* (Python slim image) untuk deployment yang konsisten di platform cloud seperti Hugging Face Spaces.
@@ -23,18 +24,19 @@ Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilit
 
 - **Backend Framework:** Python Flask 3.x
 - **Machine Learning Core:** Scikit-Learn, Pandas, NumPy
-- **MLOps & Tracking:** DagsHub, MLflow, Joblib
+- **MLOps & Tracking:** DagsHub, MLflow, Joblib, HuggingFace Hub (HfApi)
 - **Frontend Presentation:** HTML5, Modern Javascript (Fetch API), Bootstrap 5.3
 - **Data Visualization:** Google Looker Studio Embeds (`<iframe>` integrasi)
 - **Deployment & Scaling:** Docker
 
 ### Persyaratan Environment Variabel Berbasis Cloud
-Agar sistem pelacakan (Tracking) metrik performa ke **DagsHub / MLflow** berfungsi sempurna, Anda _diwajibkan_ menyediakan kredensial token.
+Agar sistem pelacakan (Tracking) metrik dan eksport model fisik berfungsi di *Cloud*, Anda _diwajibkan_ menyediakan kredensial token.
 Bagi pengguna lokal (Windows/MacOS), siapkan file `.env` atau atur via *System Environment Variables*. Jika berjalan di **Hugging Face Spaces**, tambahkan ini ke menu **Settings > Variables and secrets**:
 
-*   **`DAGSHUB_TOKEN`**: Berisi API Token dari akun DagsHub Anda.
+*   **`DAGSHUB_TOKEN`**: Berisi API Token akun DagsHub Anda (Untuk mengirim data pelacakan akurasi & eksperimen melalui MLflow murni).
+*   **`HF_TOKEN`**: Berisi Access Token Hugging Face Anda dengan akses *Write* (Agar file `.pkl` yang dilatih di RAM dapat langsung diunggah otomatis ke Hugging Face Model Repositori Anda).
 
-_Jika variabel ini tidak ada, aplikasi tetap berjalan lancar namun proses latih (training) tidak akan dicatat di DagsHub (Hanya jalan secara offline/lokal)._
+_Jika variabel ini tidak disetel, aplikasi tetap akan berjalan dengan aman secara offline (fitur pelacakan dan auto-upload akan nonaktif)._
 
 ## 📂 Struktur Proyek
 
@@ -45,11 +47,11 @@ AttritionProject/
 │       └── huggingface-sync.yml # Otomasi Deployment CI/CD ke Hugging Face
 ├── app/
 │   ├── app.py              # Main Flask application & Business Logic (Threshold 0.40)
-│   ├── model_loader.py     # Pure MLflow HTTP integration with fast on-the-fly training
+│   ├── model_loader.py     # Pure MLflow HTTP integration & HuggingFace Model Auto-Upload
 │   └── utils.py            # Placeholder untuk fungsionalitas pendukung di masa depan
 ├── data/
 │   └── employee_data_final.csv  # Dataset mentah 
-├── model/                  # Hasil training model `.pkl` (Di-ignore oleh git untuk menghindari isu LFS)
+├── model/                  # Hasil training model `.pkl` (Di-ignore oleh git, di-upload via HfApi)
 ├── mlflow.db               # Database SQLite lokal
 ├── mlruns/                 # Direktori internal log (Otomatis terbuat jika offline)
 ├── frontend/

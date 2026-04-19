@@ -77,11 +77,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 // Request API REST Flask
-                const response = await fetch('/api/predict', {
+                // Gunakan jalur relatif tanpa '/' di depan agar lebih aman di proxy Hugging Face
+                const response = await fetch('api/predict', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ features: userPayloadObject })
                 });
+
+                // Cek jika respons bukan JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const errorHtml = await response.text();
+                    console.error("Respons bukan JSON:", errorHtml);
+                    throw new Error(`Server tidak mengembalikan JSON. Status: ${response.status}. Hubungi admin atau cek log server.`);
+                }
 
                 const data = await response.json();
                 resultBox.style.display = 'block';

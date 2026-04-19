@@ -6,5 +6,5 @@ env/
 .venv/
 mlruns/
 mlflow.db
-
-
+model/
+*.pkl

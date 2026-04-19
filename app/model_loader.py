@@ -50,14 +50,18 @@ def load_or_train_model():
             # Bagi data: 80% untuk latihan, 20% untuk ujian
             X_train, X_test, y_train, y_test = train_test_split(X_encoded, y_encoded, test_size=0.2, random_state=42)
             
-            # Cek environment untuk DagsHub (Jika tidak ada Token, lewati tracking agar tidak hang di server)
+            # Cek environment untuk DagsHub
             dagshub_token = os.environ.get("DAGSHUB_TOKEN") or os.environ.get("DAGSHUB_USER_TOKEN")
             if dagshub_token:
                 try:
-                    # Bypass Interactive Prompt (yang sering bikin Hang)
-                    os.environ["DAGSHUB_USER_TOKEN"] = dagshub_token
-                    print("Initiating DagsHub integration and tracking with MLflow...")
-                    dagshub.init(repo_owner='Riskiii098', repo_name='AttritionApp', mlflow=True)
+                    # Hapus ketergantungan pada fungsi dagshub.init() yang bikin server hang!
+                    # Gunakan native MLflow API yang murni HTTP request
+                    os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/Riskiii098/AttritionApp.mlflow"
+                    os.environ["MLFLOW_TRACKING_USERNAME"] = "Riskiii098"
+                    os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+                    
+                    print("Initiating pure MLflow integration to DagsHub...")
+                    mlflow.set_tracking_uri("https://dagshub.com/Riskiii098/AttritionApp.mlflow")
                     mlflow.set_experiment("Attrition_Prediction")
                     
                     # Membuat nama run otomatis dengan timestamp

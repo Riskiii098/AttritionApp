@@ -50,47 +50,63 @@ def load_or_train_model():
             # Bagi data: 80% untuk latihan, 20% untuk ujian
             X_train, X_test, y_train, y_test = train_test_split(X_encoded, y_encoded, test_size=0.2, random_state=42)
             
-            print("Initiating DagsHub integration and tracking with MLflow...")
-            dagshub.init(repo_owner='Riskiii098', repo_name='AttritionApp', mlflow=True)
-            mlflow.set_experiment("Attrition_Prediction")
-            
-            # Membuat nama run otomatis dengan timestamp
-            run_name = f"RandomForest_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
-            with mlflow.start_run(run_name=run_name):
-                # Menambahkan class_weight='balanced' agar model lebih sensitif terhadap karyawan yang resign
-                _model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=42)
-                _model.fit(X_train, y_train)
-                
-                # Uji pada data yang BELUM pernah dilihat (X_test)
-                # Menggunakan Threshold 0.40 untuk deteksi Risiko (Logika Bisnis yang Benar)
-                probs = _model.predict_proba(X_test)[:, 1]
-                predictions = (probs >= 0.40).astype(int)
-                
-                # Hitung Metrik Lengkap pada Threshold 0.40
-                acc = accuracy_score(y_test, predictions)
-                prec = precision_score(y_test, predictions)
-                rec = recall_score(y_test, predictions)
-                f1 = f1_score(y_test, predictions)
-                
-                print(f"Final Model Trained! (Threshold: 0.40)")
-                print(f"Metrics -> Accuracy: {acc:.4f}, Precision: {prec:.4f}, Recall: {rec:.4f}, F1-Score: {f1:.4f}")
-                
-                # Log ke MLflow
-                mlflow.log_param("n_estimators", 100)
-                mlflow.log_param("threshold", 0.40)
-                mlflow.log_metric("accuracy", acc)
-                mlflow.log_metric("precision", prec)
-                mlflow.log_metric("recall", rec)
-                mlflow.log_metric("f1_score", f1)
-                
-                mlflow.sklearn.log_model(_model, "model")
+            # Cek environment untuk DagsHub (Jika tidak ada Token, lewati tracking agar tidak hang di server)
+            dagshub_token = os.environ.get("DAGSHUB_TOKEN")
+            if dagshub_token:
+                try:
+                    print("Initiating DagsHub integration and tracking with MLflow...")
+                    dagshub.init(repo_owner='Riskiii098', repo_name='AttritionApp', mlflow=True)
+                    mlflow.set_experiment("Attrition_Prediction")
+                    
+                    # Membuat nama run otomatis dengan timestamp
+                    run_name = f"RandomForest_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                    
+                    with mlflow.start_run(run_name=run_name):
+                        _model = train_logic(X_train, y_train, X_test, y_test)
+                        mlflow.sklearn.log_model(_model, "model")
+                except Exception as e:
+                    print(f"Tracking error (DagsHub/MLflow): {e}. Lanjut training tanpa tracking.")
+                    _model = train_logic(X_train, y_train, X_test, y_test)
+            else:
+                print("DAGSHUB_TOKEN tidak ditemukan. Melakukan training lokal tanpa tracking.")
+                _model = train_logic(X_train, y_train, X_test, y_test)
             
             os.makedirs(MODEL_DIR, exist_ok=True)
             joblib.dump(_model, MODEL_PATH)
             joblib.dump(_features, FEATURES_PATH)
             
-            print("Selesai! Model berhasil dilatih, disimpan dengan joblib, dan dicatat di MLflow.")
+            print("Selesai! Model berhasil dilatih dan disimpan dengan joblib.")
+
+def train_logic(X_train, y_train, X_test, y_test):
+    """ Logika inti training RandomForest agar bisa dipanggil dengan atau tanpa MLflow """
+    # Menambahkan class_weight='balanced' agar model lebih sensitif terhadap karyawan yang resign
+    model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=42)
+    model.fit(X_train, y_train)
+    
+    # Uji pada data yang BELUM pernah dilihat (X_test)
+    # Menggunakan Threshold 0.40 untuk deteksi Risiko (Logika Bisnis yang Benar)
+    probs = model.predict_proba(X_test)[:, 1]
+    predictions = (probs >= 0.40).astype(int)
+    
+    # Hitung Metrik Lengkap pada Threshold 0.40
+    acc = accuracy_score(y_test, predictions)
+    prec = precision_score(y_test, predictions)
+    rec = recall_score(y_test, predictions)
+    f1 = f1_score(y_test, predictions)
+    
+    print(f"Final Model Trained! (Threshold: 0.40)")
+    print(f"Metrics -> Accuracy: {acc:.4f}, Precision: {prec:.4f}, Recall: {rec:.4f}, F1-Score: {f1:.4f}")
+    
+    # Log metrics ke console (akan muncul di log Hugging Face)
+    if mlflow.active_run():
+        mlflow.log_param("n_estimators", 100)
+        mlflow.log_param("threshold", 0.40)
+        mlflow.log_metric("accuracy", acc)
+        mlflow.log_metric("precision", prec)
+        mlflow.log_metric("recall", rec)
+        mlflow.log_metric("f1_score", f1)
+        
+    return model
 
 def predict_from_dict(input_dict):
     """

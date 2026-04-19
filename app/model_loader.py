@@ -83,8 +83,29 @@ def load_or_train_model():
                 joblib.dump(_model, MODEL_PATH)
                 joblib.dump(_features, FEATURES_PATH)
                 print("Selesai! Model berhasil dilatih dan disimpan dengan joblib.")
+                
+                # Integrasi Auto-Upload ke Hugging Face Model Hub (Khusus Space jika token disetel)
+                hf_token = os.environ.get("HF_TOKEN")
+                if hf_token:
+                    from huggingface_hub import HfApi
+                    api = HfApi(token=hf_token)
+                    print("Mengirim salinan fisik model .pkl ke repositori Model Hugging Face Anda...")
+                    api.upload_file(
+                        path_or_fileobj=MODEL_PATH,
+                        path_in_repo="rf_model.pkl",
+                        repo_id="Riskiii/Attrition-Model"
+                    )
+                    api.upload_file(
+                        path_or_fileobj=FEATURES_PATH,
+                        path_in_repo="features.pkl",
+                        repo_id="Riskiii/Attrition-Model"
+                    )
+                    print("Yeay! Model berhasil mendarat di https://huggingface.co/Riskiii/Attrition-Model")
+                else:
+                    print("Lewati auto-upload Model: Variabel HF_TOKEN tidak ada di environment.")
+                    
             except Exception as e:
-                print(f"Peringatan: Gagal menyimpan model ke disk (kemungkinan akses Read-Only). Berjalan di RAM. {e}")
+                print(f"Peringatan: Gagal menyimpan/mengupload model. Berjalan di RAM. {e}")
 
 def train_logic(X_train, y_train, X_test, y_test):
     """ Logika inti training RandomForest agar bisa dipanggil dengan atau tanpa MLflow """

@@ -28,6 +28,14 @@ Sistem komprehensif berbasis ***Machine Learning*** untuk memprediksi probabilit
 - **Data Visualization:** Google Looker Studio Embeds (`<iframe>` integrasi)
 - **Deployment & Scaling:** Docker
 
+### Persyaratan Environment Variabel Berbasis Cloud
+Agar sistem pelacakan (Tracking) metrik performa ke **DagsHub / MLflow** berfungsi sempurna, Anda _diwajibkan_ menyediakan kredensial token.
+Bagi pengguna lokal (Windows/MacOS), siapkan file `.env` atau atur via *System Environment Variables*. Jika berjalan di **Hugging Face Spaces**, tambahkan ini ke menu **Settings > Variables and secrets**:
+
+*   **`DAGSHUB_TOKEN`**: Berisi API Token dari akun DagsHub Anda.
+
+_Jika variabel ini tidak ada, aplikasi tetap berjalan lancar namun proses latih (training) tidak akan dicatat di DagsHub (Hanya jalan secara offline/lokal)._
+
 ## 📂 Struktur Proyek
 
 ```text
@@ -37,13 +45,13 @@ AttritionProject/
 │       └── huggingface-sync.yml # Otomasi Deployment CI/CD ke Hugging Face
 ├── app/
 │   ├── app.py              # Main Flask application & Business Logic (Threshold 0.40)
-│   ├── model_loader.py     # DagsHub & MLflow integration with automatic training logic
+│   ├── model_loader.py     # Pure MLflow HTTP integration with fast on-the-fly training
 │   └── utils.py            # Placeholder untuk fungsionalitas pendukung di masa depan
 ├── data/
 │   └── employee_data_final.csv  # Dataset mentah 
-├── model/                  # Cache penyimpanan parameter dan arsitektur mesin `.pkl` via Joblib
-├── mlflow.db               # Database SQLite lokal untuk tracking history MLflow
-├── mlruns/                 # Direktori internal log Tracking model oleh MLflow (otomatis terbuat)
+├── model/                  # Hasil training model `.pkl` (Di-ignore oleh git untuk menghindari isu LFS)
+├── mlflow.db               # Database SQLite lokal
+├── mlruns/                 # Direktori internal log (Otomatis terbuat jika offline)
 ├── frontend/
 │   ├── static/
 │   │   ├── script.js       # Asynchronous HTTP POST request handler for ML endpoint

@@ -5,5 +5,5 @@ scikit-learn
 joblib
 mlflow
 gunicorn
-flask-cors
 dagshub
+huggingface_hub

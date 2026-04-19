@@ -51,9 +51,11 @@ def load_or_train_model():
             X_train, X_test, y_train, y_test = train_test_split(X_encoded, y_encoded, test_size=0.2, random_state=42)
             
             # Cek environment untuk DagsHub (Jika tidak ada Token, lewati tracking agar tidak hang di server)
-            dagshub_token = os.environ.get("DAGSHUB_TOKEN")
+            dagshub_token = os.environ.get("DAGSHUB_TOKEN") or os.environ.get("DAGSHUB_USER_TOKEN")
             if dagshub_token:
                 try:
+                    # Bypass Interactive Prompt (yang sering bikin Hang)
+                    os.environ["DAGSHUB_USER_TOKEN"] = dagshub_token
                     print("Initiating DagsHub integration and tracking with MLflow...")
                     dagshub.init(repo_owner='Riskiii098', repo_name='AttritionApp', mlflow=True)
                     mlflow.set_experiment("Attrition_Prediction")
@@ -71,11 +73,14 @@ def load_or_train_model():
                 print("DAGSHUB_TOKEN tidak ditemukan. Melakukan training lokal tanpa tracking.")
                 _model = train_logic(X_train, y_train, X_test, y_test)
             
-            os.makedirs(MODEL_DIR, exist_ok=True)
-            joblib.dump(_model, MODEL_PATH)
-            joblib.dump(_features, FEATURES_PATH)
-            
-            print("Selesai! Model berhasil dilatih dan disimpan dengan joblib.")
+            # Coba simpan model ke file, abaikan jika read-only permission (misal di Hugging Face)
+            try:
+                os.makedirs(MODEL_DIR, exist_ok=True)
+                joblib.dump(_model, MODEL_PATH)
+                joblib.dump(_features, FEATURES_PATH)
+                print("Selesai! Model berhasil dilatih dan disimpan dengan joblib.")
+            except Exception as e:
+                print(f"Peringatan: Gagal menyimpan model ke disk (kemungkinan akses Read-Only). Berjalan di RAM. {e}")
 
 def train_logic(X_train, y_train, X_test, y_test):
     """ Logika inti training RandomForest agar bisa dipanggil dengan atau tanpa MLflow """
